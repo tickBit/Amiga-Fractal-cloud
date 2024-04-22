@@ -3,9 +3,11 @@
 
     UI based on gadtoolsgadgets.c example at https://wiki.amigaos.net/wiki/GadTools_Gadgets
 
-    Compililing with VBCC:
+    Now tested in 32-bit color mode
 
-    vc Fractal-cloud.c -o Fractal-cloud -lamiga
+    Compiling with VBCC:
+
+    vc Fractal-cloud-OS4.c -o Fractal-cloud-OS4 -lamiga
     
 */
 
@@ -108,8 +110,8 @@ void generateFractalCloud(UWORD *h) {
       
 
       while (size > 1) {
-        for (LONG y = 0; y < 512-size + 2; y+=size) {
-          for (LONG x = 0; x < 512-size + 2; x+=size) {
+        for (LONG y = 0; y < 512-size + 1; y+=size) {
+          for (LONG x = 0; x < 512-size + 1; x+=size) {
             
             b1 = IGraphics->ReadPixelColor(rastPort,x+leftMarginal,y+topMarginal);
             b2 = IGraphics->ReadPixelColor(rastPort,size+x+leftMarginal,y+topMarginal);
@@ -635,7 +637,7 @@ int savePicture(UBYTE *copybuf) {
     bmhd->bmh_Top = 0;
     bmhd->bmh_Width = 512;
     bmhd->bmh_Height = 512;
-    bmhd->bmh_Depth = 32;
+    bmhd->bmh_Depth = 24;
     bmhd->bmh_Masking = 0;
 
     IDataTypes->SetDTAttrs(dto, NULL, NULL,
@@ -655,8 +657,6 @@ int savePicture(UBYTE *copybuf) {
         return -2;
     }
     
-    
-    // Kopioi bittikartan alue puskuriin
     IGraphics->ReadPixelArray(rastPort, leftMarginal, topMarginal,
                buf, 0, 0,
                512*4, PBPAFMT_ARGB,
