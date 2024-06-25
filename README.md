@@ -1,6 +1,6 @@
 # Fractal cloud generator for Amiga
 
-## AmihaOS 4 version
+## AmigaOS 4 version
 
 The app should be executed from the AmigaShell. Now saving the IFF picture is tested in 32 bit color mode. The first version worked only in 16 bit color mode.
 
