@@ -8,4 +8,7 @@ The app should be executed from the AmigaShell. Now saving the IFF picture is te
 
 ## AmigaOS 3 version
 
-The app should be run on 24 bit Workbench screen. Tested on AmiKit and Amiga Forever's Workbench 3.x.
+The app should be run on 24 bit Workbench screen. Tested on AmiKit and Amiga Forever's Workbench 3.x. Saved 24 bit IFF file is not compressed.
+
+![AmigaOS3-fractal-cloud](https://github.com/tickBit/Amiga-Fractal-cloud/assets/61118857/110f5b71-756c-48d7-8947-6b100a7a8739)
+
