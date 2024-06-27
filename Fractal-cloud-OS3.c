@@ -1,7 +1,7 @@
 /*
     AmigaOS 3 version of a fractal cloud generator
 
-    This is version is meant to be run on 24 bit Workbench screen.
+    This is version is meant to be run on 32 bit Workbench screen.
 
     UI based on gadtoolsgadgets.c example at https://wiki.amigaos.net/wiki/GadTools_Gadgets
 
@@ -36,15 +36,6 @@
 #include <clib/alib_protos.h>
 #include <clib/gadtools_protos.h>
 #include <clib/graphics_protos.h>
-
-
-
-
-#define RECTFMT_RGB 0
-#define RECTFMT_RGBA 1
-#define RECTFMT_ARGB 2
-#define LBMI_WIDTH 0x84001001
-#define LBMI_HEIGHT 0x84001002
 
 #define MYLEFTEDGE 0
 #define MYTOPEDGE  0
@@ -84,6 +75,15 @@ struct Library		*P96Base;
 LONG topMarginal;
 LONG leftMarginal;
 
+struct EasyStruct myES =
+{
+sizeof(struct EasyStruct),
+0,
+"Info",
+"IFF file succesfully saved!",
+"Ok",
+};
+
 /* Print any error message.  We could do more fancy handling (like
 ** an EasyRequest()), but this is only a demo.
 */
@@ -106,7 +106,46 @@ void generateFractalCloud(UWORD *h) {
                                                                                       
       p96RectFill(rastPort,leftMarginal,topMarginal,size+leftMarginal,size+topMarginal, 0xFF000000);
       
-    
+      /*
+        Random pixel to corners of the fractal square
+      */
+      
+      // upper left corner
+      ULONG color = 0xFF000000;
+      ULONG a = rand() % 256;
+      ULONG blue = 255;
+      ULONG green = a << 8;
+      ULONG red = a << 16;
+      color = color | red | green | blue;
+      p96WritePixel(rastPort, leftMarginal, topMarginal, color);
+
+      // upper right corner
+      color = 0xFF000000;
+      a = rand() % 256;
+      blue = 255;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green | blue;
+      p96WritePixel(rastPort, leftMarginal+512, topMarginal, color);
+
+      // lower left corner
+      color = 0xFF000000;
+      a = rand() % 256;
+      blue = 255;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green | blue;
+      p96WritePixel(rastPort, leftMarginal, topMarginal+512, color);
+
+      // lower right corner
+      color = 0xFF000000;
+      a = rand() % 256;
+      blue = rand() % 256;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green | blue;
+      p96WritePixel(rastPort, leftMarginal + 512, topMarginal+512, color);
+
       while (size > 1) {
         for (LONG y = 0; y < 512-size + 1; y+=size) {
           for (LONG x = 0; x < 512-size + 1; x+=size) {
@@ -128,9 +167,8 @@ void generateFractalCloud(UWORD *h) {
             
             if (centre == 0x00000000) {
 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b1 + b2 + b3 + b4) / 4 + r;                
 
@@ -153,9 +191,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (north == 0) {
                 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b1 + b2) / 2 + r;                
 
@@ -177,9 +214,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (south == 0) {
                 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b3 + b4) / 2 + r;
                 
@@ -201,10 +237,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (west == 0) {
                 
-                
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b1 + b3) / 2 + r; 
 
@@ -226,9 +260,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (east == 0) {
                 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b2 + b4) / 2 + r;
 
@@ -486,8 +519,8 @@ else
                 if (NULL == (mywin = OpenWindowTags(NULL,
                         WA_Title,     "Fractal cloud generator for AmigaOS 3",
                         WA_Gadgets,   glist,      WA_AutoAdjust,    TRUE,
-                        WA_InnerWidth,  512,
-                        WA_InnerHeight, 562,
+                        WA_InnerWidth,  513,
+                        WA_InnerHeight, 563,
                         WA_DragBar,    TRUE,      WA_DepthGadget,   TRUE,
                         WA_Activate,   TRUE,      WA_CloseGadget,   TRUE,
                         WA_SizeGadget, FALSE,      WA_SmartRefresh, TRUE,
@@ -758,7 +791,7 @@ int savePicture(UBYTE *copybuf) {
     // Free IFF handle
     FreeIFF(iff);
 
-    printf("IFF file saved successfully.\n");
+    EasyRequest(NULL, &myES, NULL, "(Variable)", NULL);
 
     return RETURN_OK;
 }
