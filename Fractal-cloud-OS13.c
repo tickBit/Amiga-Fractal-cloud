@@ -400,26 +400,9 @@ int generateFractalCloud() {
     WORD topMarginal = window->BorderTop;
 
     WORD height = 16;    // "height" of the cloud fractal
-      
-                                                                                      
+
     SetAPen(rp,0);
     RectFill(rp, leftMarginal, topMarginal, leftMarginal + size, topMarginal + size);
-      
-    // upper left corner
-    SetAPen(rp, rand() % 15 + 1);
-    WritePixel(rp,leftMarginal,topMarginal);
-
-    // upper right corner
-    SetAPen(rp, rand() % 15 + 1);
-    WritePixel(rp,128+leftMarginal,0+topMarginal);
-
-    // lower left corner
-    SetAPen(rp, rand() % 15 + 1);
-    WritePixel(rp, leftMarginal, 128+topMarginal);
-
-    // lower right corner
-    SetAPen(rp, rand() % 15 + 1);
-    WritePixel(rp,128+leftMarginal,128+topMarginal);
 
     do {
         for (WORD y = 0; y <= 128-size; y+=size) {
@@ -515,6 +498,52 @@ int generateFractalCloud() {
       height = height * 0.7f; // decrease randomness
 
       } while (size > 1);
+
+    
+      
+    // upper left corner
+    UWORD p1 = ReadPixel(rp, leftMarginal + 1, topMarginal);
+    UWORD p2 = ReadPixel(rp, leftMarginal, topMarginal + 1);
+
+    WORD r = rand() % ((WORD)(height + 1.0));
+    if (rand() % 2 != 0) r = -r;
+    UWORD a = (p1 + p2) / 2 + r;
+    
+    SetAPen(rp, a);
+    WritePixel(rp,leftMarginal,topMarginal);
+
+    // upper right corner
+    p1 = ReadPixel(rp, leftMarginal + 128 - 1, topMarginal);
+    p2 = ReadPixel(rp, leftMarginal + 128, topMarginal + 1);
+
+    r = rand() % ((WORD)(height + 1.0));
+    if (rand() % 2 != 0) r = -r;
+    a = (p1 + p2) / 2 + r;
+
+    SetAPen(rp, a);
+    WritePixel(rp,128+leftMarginal,0+topMarginal);
+
+    // lower left corner
+    p1 = ReadPixel(rp, leftMarginal + 1, topMarginal + 128);
+    p2 = ReadPixel(rp, leftMarginal, topMarginal + 128 - 1);
+
+    r = rand() % ((WORD)(height + 1.0));
+    if (rand() % 2 != 0) r = -r;
+    a = (p1 + p2) / 2 + r;
+
+    SetAPen(rp, a);
+    WritePixel(rp, leftMarginal, 128+topMarginal);
+
+    // lower right corner
+    p1 = ReadPixel(rp, leftMarginal + 128 - 1, topMarginal + 128);
+    p2 = ReadPixel(rp, leftMarginal + 128, topMarginal + 128 - 1);
+
+    r = rand() % ((WORD)(height + 1.0));
+    if (rand() % 2 != 0) r = -r;
+    a = (p1 + p2) / 2 + r;
+
+    SetAPen(rp, a);
+    WritePixel(rp,128+leftMarginal,128+topMarginal);
 
     return 0;
 }
