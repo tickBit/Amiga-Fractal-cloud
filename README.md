@@ -12,3 +12,8 @@ The app should be run on 24 bit Workbench screen. Tested on AmiKit and Amiga For
 
 ![AmigaOS3-fractal-cloud](https://github.com/tickBit/Amiga-Fractal-cloud/assets/61118857/110f5b71-756c-48d7-8947-6b100a7a8739)
 
+## AmigaOS 1.3 version
+
+The app open own 16 color screen. The filename of the picture to be saved must not have quotation marks.
+
+![AmigaOS13-fractal-cloud](https://github.com/tickBit/Amiga-Fractal-cloud/assets/61118857/c1a153ff-a4bf-4b29-b245-2d96e034d4ad)
