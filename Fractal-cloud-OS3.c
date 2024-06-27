@@ -102,49 +102,8 @@ void generateFractalCloud(UWORD *h) {
       ULONG size = 512;
 
       float height = (float)*h;    // "height" of the cloud fractal
-      
-                                                                                      
+                                                                                
       p96RectFill(rastPort,leftMarginal,topMarginal,size+leftMarginal,size+topMarginal, 0xFF000000);
-      
-      /*
-        Random pixel to corners of the fractal square
-      */
-      
-      // upper left corner
-      ULONG color = 0xFF000000;
-      ULONG a = rand() % 256;
-      ULONG blue = 255;
-      ULONG green = a << 8;
-      ULONG red = a << 16;
-      color = color | red | green | blue;
-      p96WritePixel(rastPort, leftMarginal, topMarginal, color);
-
-      // upper right corner
-      color = 0xFF000000;
-      a = rand() % 256;
-      blue = 255;
-      green = a << 8;
-      red = a << 16;
-      color = color | red | green | blue;
-      p96WritePixel(rastPort, leftMarginal+512, topMarginal, color);
-
-      // lower left corner
-      color = 0xFF000000;
-      a = rand() % 256;
-      blue = 255;
-      green = a << 8;
-      red = a << 16;
-      color = color | red | green | blue;
-      p96WritePixel(rastPort, leftMarginal, topMarginal+512, color);
-
-      // lower right corner
-      color = 0xFF000000;
-      a = rand() % 256;
-      blue = rand() % 256;
-      green = a << 8;
-      red = a << 16;
-      color = color | red | green | blue;
-      p96WritePixel(rastPort, leftMarginal + 512, topMarginal+512, color);
 
       while (size > 1) {
         for (LONG y = 0; y < 512-size + 1; y+=size) {
@@ -284,7 +243,96 @@ void generateFractalCloud(UWORD *h) {
       height = height * 0.7f; // decrease randomness
 
       }
+      /*
+        Pixel to corners of the fractal square
+      */
       
+      ULONG p1 = p96ReadPixel(rastPort, leftMarginal + 1, topMarginal);
+      ULONG p2 = p96ReadPixel(rastPort, leftMarginal, topMarginal + 1);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      ULONG a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      ULONG color = 0xFF0000FF;
+      ULONG green = a << 8;
+      ULONG red = a << 16;
+      color = color | red | green;
+      
+      p96WritePixel(rastPort, leftMarginal, topMarginal, color);
+
+      // upper right corner
+      p1 = p96ReadPixel(rastPort, leftMarginal + 512 - 1, topMarginal);
+      p2 = p96ReadPixel(rastPort, leftMarginal + 512, topMarginal + 1);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      color = 0xFF0000FF;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green;
+
+      p96WritePixel(rastPort, leftMarginal+512, topMarginal, color);
+
+      // lower left corner
+      p1 = p96ReadPixel(rastPort, leftMarginal + 1, topMarginal + 512);
+      p2 = p96ReadPixel(rastPort, leftMarginal, topMarginal + 512 - 1);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      color = 0xFF0000FF;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green;
+
+      p96WritePixel(rastPort, leftMarginal, topMarginal+512, color);
+
+      // lower right corner
+      p1 = p96ReadPixel(rastPort, leftMarginal + 512, topMarginal + 512 - 1);
+      p2 = p96ReadPixel(rastPort, leftMarginal + 512 - 1, topMarginal + 512);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      color = 0xFF0000FF;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green;
+
+      p96WritePixel(rastPort, leftMarginal + 512, topMarginal+512, color);
 }
 
 /*
