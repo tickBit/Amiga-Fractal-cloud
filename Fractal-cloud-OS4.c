@@ -3,7 +3,7 @@
 
     UI based on gadtoolsgadgets.c example at https://wiki.amigaos.net/wiki/GadTools_Gadgets
 
-    Now tested in 32-bit color mode
+    Tested in 32-bit color mode
 
     Compiling with VBCC:
 
@@ -17,6 +17,7 @@
 #include <dos/dos.h>
 #include <intuition/intuition.h>
 #include <intuition/gadgetclass.h>
+#include <intuition/intuitionbase.h>
 #include <libraries/gadtools.h>
 #include <libraries/asl.h>
 #include <datatypes/datatypes.h>
@@ -30,7 +31,6 @@
 #include <proto/gadtools.h>
 #include <proto/datatypes.h>
 #include <proto/asl.h>
-
 
 #define RECTFMT_RGB 0
 #define RECTFMT_RGBA 1
@@ -108,7 +108,6 @@ void generateFractalCloud(UWORD *h) {
       
       IGraphics->RectFillColor(rastPort,leftMarginal,topMarginal,size+leftMarginal,size+topMarginal, 0xFF000000);
       
-
       while (size > 1) {
         for (LONG y = 0; y < 512-size + 1; y+=size) {
           for (LONG x = 0; x < 512-size + 1; x+=size) {
@@ -129,9 +128,8 @@ void generateFractalCloud(UWORD *h) {
             
             if (centre == 0x00000000) {
 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b1 + b2 + b3 + b4) / 4 + r;                
 
@@ -159,9 +157,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (north == 0) {
                 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b1 + b2) / 2 + r;                
 
@@ -188,9 +185,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (south == 0) {
                 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b3 + b4) / 2 + r;
                 
@@ -217,10 +213,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (west == 0) {
                 
-                
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1 ;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b1 + b3) / 2 + r; 
 
@@ -247,9 +241,8 @@ void generateFractalCloud(UWORD *h) {
 
             if (east == 0) {
                 
-                ULONG r1 = rand() % ((ULONG)(height * 0.5 + 1.0));
-                ULONG r3 = rand() % 2;
-                if (r3 == 0) r = -r1 ; else r = r1;
+                ULONG r = rand() % ((ULONG)(height * 0.5 + 1.0));
+                if (rand() % 2 == 0) r = -r;
 
                 ULONG a = (b2 + b4) / 2 + r;
 
@@ -276,6 +269,118 @@ void generateFractalCloud(UWORD *h) {
       height = height * 0.7f; // decrease randomness
 
       }
+
+      /*
+        Draw pixel at the corners of the square fractal
+      */
+      
+      // upper left corner
+      ULONG p1 = IGraphics->ReadPixelColor(rastPort, leftMarginal + 1, topMarginal);
+      ULONG p2 = IGraphics->ReadPixelColor(rastPort, leftMarginal, topMarginal + 1);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      ULONG a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      ULONG color = 0xFF0000FF;
+      ULONG green = a << 8;
+      ULONG red = a << 16;
+      color = color | red | green;
+      
+      IGraphics->SetRPAttrs(rastPort,
+                    RPTAG_APenColor, color,  // drawing color
+                    RPTAG_DrMd, JAM1,             // drawing mode
+                  TAG_END);
+      
+      IGraphics->WritePixel(rastPort, leftMarginal, topMarginal);
+
+      // upper right corner
+      p1 = IGraphics->ReadPixelColor(rastPort, leftMarginal + 512 - 1, topMarginal);
+      p2 = IGraphics->ReadPixelColor(rastPort, leftMarginal + 512, topMarginal + 1);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      color = 0xFF0000FF;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green;
+
+      IGraphics->SetRPAttrs(rastPort,
+                    RPTAG_APenColor, color,  // drawing color
+                    RPTAG_DrMd, JAM1,             // drawing mode
+                  TAG_END);
+
+      IGraphics->WritePixel(rastPort, leftMarginal+512, topMarginal);
+
+      // lower left corner
+      p1 = IGraphics->ReadPixelColor(rastPort, leftMarginal + 1, topMarginal + 512);
+      p2 = IGraphics->ReadPixelColor(rastPort, leftMarginal, topMarginal + 512 - 1);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      color = 0xFF0000FF;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green;
+
+      IGraphics->SetRPAttrs(rastPort,
+                    RPTAG_APenColor, color,  // drawing color
+                    RPTAG_DrMd, JAM1,             // drawing mode
+                  TAG_END);
+
+      IGraphics->WritePixel(rastPort, leftMarginal, topMarginal+512);
+
+      // lower right corner
+      p1 = IGraphics->ReadPixelColor(rastPort, leftMarginal + 512, topMarginal + 512 - 1);
+      p2 = IGraphics->ReadPixelColor(rastPort, leftMarginal + 512 - 1, topMarginal + 512);
+      
+      p1 = (p1 & 0x0000FF00) >> 8;
+      p2 = (p2 & 0x0000FF00) >> 8;
+      
+      r = rand() % ((ULONG)(height * 0.5 + 1.0));
+      if (rand() % 2 == 0) r = -r;
+
+      a = (p1 + p2) / 2 + r; 
+
+      if (a > 255) a = 255;
+      if (a < 110) a = 110;
+
+      color = 0xFF0000FF;
+      green = a << 8;
+      red = a << 16;
+      color = color | red | green;
+
+      IGraphics->SetRPAttrs(rastPort,
+                    RPTAG_APenColor, color,  // drawing color
+                    RPTAG_DrMd, JAM1,             // drawing mode
+                  TAG_END);
+
+      IGraphics->WritePixel(rastPort, leftMarginal + 512, topMarginal+512);
 }
 
 /*
@@ -698,8 +803,30 @@ int savePicture(UBYTE *copybuf) {
     free(buf);
     IDataTypes->DisposeDTObject(dto);
            
-
-    printf("Picture saved successfully!\n");
+    EasyRequester("IFF file saved succesfully!","Ok");
 
     return 0;
+}
+
+int32 EasyRequester(CONST_STRPTR text, CONST_STRPTR button, ...)
+{
+  struct TagItem tags[] = { ESA_Position, REQPOS_CENTERSCREEN, TAG_END };
+  struct EasyStruct easyreq = { 0 };
+ 
+  static TEXT textbuffer[1024];
+ 
+  va_list parameter;
+  va_start(parameter,button);
+  vsprintf(textbuffer,text,parameter);
+  va_end(parameter);
+ 
+  easyreq.es_StructSize   = sizeof(struct EasyStruct);
+  easyreq.es_Flags        = ESF_SCREEN | ESF_TAGGED | ESF_EVENSIZE;
+  easyreq.es_Title        = "Info";
+  easyreq.es_TextFormat   = textbuffer;
+  easyreq.es_GadgetFormat = button;
+  easyreq.es_Screen       = NULL;
+  easyreq.es_TagList      = tags;
+ 
+  return IIntuition->EasyRequestArgs(NULL, &easyreq, NULL, NULL);
 }
